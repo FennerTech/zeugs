@@ -1,0 +1,680 @@
+<!-- -----------------------------------------------
+Zeugs v1.0
+(c) 2024 Marco Fenner
+
+Urheberrechtlich geschützt.
+Kopieren erlaubt.
+Verändern nur mit Namensnennung des Autors ;-)
+Danke und Viel Spaß!
+------------------------------------------------ -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Zeugs v1.0</title>
+    <style>
+        body {
+            background-color: #343541;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #infoBox {
+            border: 1px solid white;
+            padding: 10px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background-color: rgba(52, 53, 65, 0.9);
+            width: fit-content;
+        }
+        #buttons {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+        #confirmNo {
+            margin-left: 10px;
+        }
+        #resetButton, #infoButton {
+            display: inline-block;
+            margin-left: 5px;
+            background-color: red;
+            color: white;
+            padding: 2px 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        #infoButton {
+            background-color: blue;
+        }
+        #title {
+            font-size: 24px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        #subtitle {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        #countdown {
+            font-size: 64px;
+            margin-bottom: 10px;
+            color: #FFFFE0;
+        }
+        .label {
+            color: white;
+        }
+        .value {
+            color: #90EE90;
+        }
+        #infoBox div {
+            margin-bottom: 8px;
+        }
+        #eventCounter {
+            font-size: 32px;
+        }
+        #modalOverlay, #impressumModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 10000;
+        }
+        #modal, #impressumModalContent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #444654;
+            padding: 20px;
+            text-align: left;
+            z-index: 10001;
+        }
+        #impressumModalContent {
+            width: 75%;
+            height: 75%;
+            overflow-y: auto;
+        }
+        .closeButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #impressumModal h2, #impressumModal h3 {
+            color: white;
+        }
+        #impressumModal p {
+            color: white;
+        }
+        #impressumModal a {
+            color: #90EE90;
+            text-decoration: none;
+        }
+        .event {
+            position: absolute;
+            z-index: 500;
+        }
+        #infoBox span[class^="BZ"] {
+            color: #90EE90;
+        }
+        #cookieNotice {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #444654;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            z-index: 9999;
+        }
+        #cookieNotice button {
+            background-color: #90EE90;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <script language="JavaScript" src="https://www.besucherzaehler-kostenlos.de/js/counter.js.php?count=1&id=fennertech.github.iozeugs&start=0&design=6"></script>
+
+    <div id="infoBox">
+        <div id="buttons">
+            <div id="resetButton">X</div>
+            <div id="infoButton">i</div>
+        </div>
+        <div id="title">Zeugs v1.0</div>
+        <div id="subtitle">Ein neues ZPG vom <a href="mailto:datenschrauber@posteo.de" style="color: lightblue;">Datenschrauber</a>!
+</div>
+        <div id="countdown">15</div>
+        <div>
+            <span class="label">Ereignisse: </span><span class="value" id="eventCounter">0</span>
+        </div>
+        <div>
+            <span class="label">Heute: </span><span class="value" id="eventsToday">0</span>
+        </div>
+        <div>
+            <span class="label">Startzeit: </span><span class="value" id="startTime">--</span>
+        </div>
+        <div>
+            <span class="label">seit Neustart: </span><span class="value" id="elapsedTime">--</span>
+        </div>
+        <div style="height: 10px;"></div>
+        <div>
+            Besucher:
+        </div>
+        <div>
+            aktuell: <span class="BZonline"></span> / heute: <span class="BZheute"></span>
+        </div>
+        <div>
+            gesamt: <span class="BZgesamt"></span> / seit: <span class="BZseit"></span>
+        </div>
+    </div>
+
+    <div id="impressumModal">
+        <div id="impressumModalContent">
+            <button class="closeButton" id="closeImpressumModal">X</button>
+            <h2>Impressum</h2>
+        <p><strong>Angaben gemäß § 5 TMG</strong></p>
+        <p><strong>Betreiber der Website:</strong><br> Marco Fenner<br> Wiardastraße 19<br> 26603 Aurich<br> Deutschland</p>
+        <p><strong>Kontakt:</strong><br> E-Mail: <a href="mailto:datenschrauber@posteo.de">datenschrauber@posteo.de</a><br> Telefon: +49 1573 004 2105</p>
+        <p><strong>Vielen Dank für den Besuch meiner Website.<br>Wenn Sie Ihnen gefallen hat, würde ich mich über eine kurze Nachricht sehr freuen.</strong> 😊</p>
+
+        <h3>Haftungsausschluss:</h3>
+        <p><strong>Haftung für Inhalte</strong><br> Als Diensteanbieter bin ich gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG bin ich als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werde ich diese Inhalte umgehend entfernen.</p>
+
+        <p><strong>Haftung für Links</strong><br> Mein Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte ich keinen Einfluss habe. Deshalb kann ich für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werde ich derartige Links umgehend entfernen.</p>
+
+        <p><strong>Urheberrecht</strong><br> Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitte ich um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werde ich diese Inhalte umgehend entfernen.</p>
+
+        <h3>Datenschutz:</h3>
+        <p>Die Nutzung meiner Webseite ist in der Regel ohne Angabe personenbezogener Daten möglich. Soweit auf meinen Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder E-Mail-Adressen) erhoben werden, erfolgt dies, soweit möglich, stets auf freiwilliger Basis. Diese Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben. Ich weise darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.</p>
+
+        <h3>Besucherzähler von besucherzaehler-kostenlos.de</h3>
+
+        <p>Diese Webseite verwendet einen externen Zähler, um die Anzahl der Webseitenaufrufe zu erfassen. Dafür wird ein Java-Script von einer externe Webseite geladen. Der Server von <a href="https://www.besucherzaehler-kostenlos.de">besucherzaehler-kostenlos.de</a> speichert die IP-Adresse des Zugriffs anonymisiert und zeitlich begrenzt in einer LOG-Datei ab. Diese wird regelmäßig unwiderruflich gelöscht.</p>
+
+        <p>Um die korrekte Funktionsweise des Zählers zu gewährleisten, speichert der Besucherzähler zudem einen sogenannten Session-Cookie auf dem Computer des Besuchers ab. Dieser wird in der Regel vom Browser gelöscht, sobald er geschlossen wird. In diesem Cookie werden keine persönlichen Informationen gespeichert. Er enthält lediglich die Information der aufgerufenen Domain, sowie einen boolschen Tag (true/false), um den Besucher als bereits gezählt zu markieren.</p>
+
+        <p>Es werden auch darüberhinaus keine persönlichen oder personenbezogenen Daten vom Besucherzähler erhoben. Eine Nachverfolgung oder Zuordnung der Zugriffe ist zu keiner Zeit möglich. Ein besonderer Dank geht an <a href="https://www.howtodocentral.com">www.howtodocentral.com</a>, durch dessen Unterstützung dieser kostenlose Service erst möglich gemacht wird.</p>
+
+        <h3>Einsehbarkeit des Quellcodes:</h3>
+        <p>Der Quellcode dieser Seite ist vollständig für jedermann einsehbar.</p>
+        </div>
+    </div>
+
+    <div id="cookieNotice">
+        Diese Website verwendet Cookies, um sicherzustellen, dass Sie die beste Erfahrung auf unserer Website machen.
+        <button id="acceptCookies">OK</button>
+    </div>
+
+    <div id="modalOverlay">
+        <div id="modal">
+            <div>Wirklich alles zurücksetzen?<br></div>
+            <div style="height: 20px;"></div>
+            <button id="confirmYes">JA</button>
+            <button id="confirmNo">NEIN</button>
+        </div>
+    </div>
+    <script>
+        var countdownElement = document.getElementById('countdown');
+        var eventCounterElement = document.getElementById('eventCounter');
+        var eventsTodayElement = document.getElementById('eventsToday');
+        var resetButton = document.getElementById('resetButton');
+        var infoButton = document.getElementById('infoButton');
+        var modalOverlay = document.getElementById('modalOverlay');
+        var confirmYes = document.getElementById('confirmYes');
+        var confirmNo = document.getElementById('confirmNo');
+        var startTimeElement = document.getElementById('startTime');
+        var elapsedTimeElement = document.getElementById('elapsedTime');
+        var impressumModal = document.getElementById('impressumModal');
+        var closeImpressumModal = document.getElementById('closeImpressumModal');
+        var cookieNotice = document.getElementById('cookieNotice');
+        var acceptCookiesButton = document.getElementById('acceptCookies');
+        var eventCount = 0;
+        var eventsToday = 0;
+        var todayDate;
+        var countdownTime = 15;
+        var nextEventTime;
+        var startTime;
+        var eventElements = [];
+
+        if (localStorage.getItem('cookieConsent') === 'accepted') {
+            cookieNotice.style.display = 'none';
+        } else {
+            cookieNotice.style.display = 'block';
+        }
+
+        acceptCookiesButton.addEventListener('click', function() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            cookieNotice.style.display = 'none';
+        });
+
+        if (localStorage.getItem('startTime')) {
+            startTime = new Date(localStorage.getItem('startTime'));
+        } else {
+            startTime = new Date();
+            localStorage.setItem('startTime', startTime);
+        }
+        updateStartTimeLabel();
+
+        if (localStorage.getItem('eventCount')) {
+            eventCount = parseInt(localStorage.getItem('eventCount'));
+        }
+        eventCounterElement.textContent = eventCount.toLocaleString('de-DE');
+
+        if (localStorage.getItem('todayDate')) {
+            todayDate = localStorage.getItem('todayDate');
+            if (todayDate === getFormattedDate(new Date())) {
+                eventsToday = parseInt(localStorage.getItem('eventsToday')) || 0;
+            } else {
+                todayDate = getFormattedDate(new Date());
+                eventsToday = 0;
+                localStorage.setItem('todayDate', todayDate);
+                localStorage.setItem('eventsToday', eventsToday);
+            }
+        } else {
+            todayDate = getFormattedDate(new Date());
+            eventsToday = 0;
+            localStorage.setItem('todayDate', todayDate);
+            localStorage.setItem('eventsToday', eventsToday);
+        }
+        eventsTodayElement.textContent = eventsToday.toLocaleString('de-DE');
+
+        function getFormattedDate(date) {
+            var year = date.getFullYear();
+            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+            var day = date.getDate().toString().padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
+
+        function startCountdown() {
+            nextEventTime = Date.now() + countdownTime * 1000;
+            updateCountdown();
+        }
+
+        function updateCountdown() {
+            var now = Date.now();
+            var timeLeft = Math.ceil((nextEventTime - now) / 1000);
+            if (timeLeft >= 0) {
+                countdownElement.textContent = timeLeft;
+            } else {
+                triggerEvent();
+                nextEventTime += countdownTime * 1000;
+            }
+            setTimeout(updateCountdown, 100);
+        }
+
+        function triggerEvent() {
+            var currentDate = getFormattedDate(new Date());
+            if (todayDate === currentDate) {
+                eventsToday++;
+            } else {
+                todayDate = currentDate;
+                eventsToday = 1;
+                localStorage.setItem('todayDate', todayDate);
+            }
+            localStorage.setItem('eventsToday', eventsToday);
+            eventsTodayElement.textContent = eventsToday.toLocaleString('de-DE');
+
+            eventCount++;
+            localStorage.setItem('eventCount', eventCount);
+            eventCounterElement.textContent = eventCount.toLocaleString('de-DE');
+
+            updateTitle();
+
+            var eventIndex = Math.floor(Math.random() * events.length);
+            events[eventIndex]();
+        }
+
+        resetButton.addEventListener('click', function() {
+            modalOverlay.style.display = 'block';
+        });
+
+        confirmYes.addEventListener('click', function() {
+            eventCount = 0;
+            eventsToday = 0;
+            localStorage.setItem('eventCount', eventCount);
+            localStorage.setItem('eventsToday', eventsToday);
+            todayDate = getFormattedDate(new Date());
+            localStorage.setItem('todayDate', todayDate);
+            localStorage.removeItem('startTime');
+            location.reload();
+        });
+
+        confirmNo.addEventListener('click', function() {
+            modalOverlay.style.display = 'none';
+        });
+
+        infoButton.addEventListener('click', function() {
+            impressumModal.style.display = 'block';
+        });
+
+        closeImpressumModal.addEventListener('click', function() {
+            impressumModal.style.display = 'none';
+        });
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            do {
+                color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+            } while (color.toUpperCase() === '#343541');
+            return color;
+        }
+
+        function updateStartTimeLabel() {
+            var options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            startTimeElement.textContent = startTime.toLocaleDateString('de-DE', options);
+        }
+
+        function updateElapsedTime() {
+            var now = new Date();
+            var elapsed = now - startTime;
+            var seconds = Math.floor((elapsed / 1000) % 60);
+            var minutes = Math.floor((elapsed / (1000 * 60)) % 60);
+            var hours = Math.floor((elapsed / (1000 * 60 * 60)));
+
+            var totalDays = (elapsed / (1000 * 60 * 60 * 24)).toFixed(2);
+
+            var hoursStr = hours.toString().padStart(2, '0');
+            var minutesStr = minutes.toString().padStart(2, '0');
+            var secondsStr = seconds.toString().padStart(2, '0');
+
+            var elapsedString = hoursStr + ':' + minutesStr + ':' + secondsStr + ' (' + totalDays + ' Tage)';
+
+            elapsedTimeElement.textContent = elapsedString;
+        }
+
+        function updateTitle() {
+            document.title = eventCount.toLocaleString('de-DE') + ' Ereignisse';
+        }
+
+        setInterval(updateElapsedTime, 1000);
+        updateElapsedTime();
+
+        setInterval(updateTitle, 1000);
+        updateTitle();
+
+        var events = [];
+
+        function positionElement(eventElement) {
+            document.body.appendChild(eventElement);
+            var rect = eventElement.getBoundingClientRect();
+            var maxLeft = window.innerWidth - rect.width;
+            var maxTop = window.innerHeight - rect.height;
+            eventElement.style.left = Math.random() * maxLeft + 'px';
+            eventElement.style.top = Math.random() * maxTop + 'px';
+
+            eventElements.push(eventElement);
+            if (eventElements.length > 100) {
+                var oldestElement = eventElements.shift();
+                oldestElement.remove();
+            }
+        }
+
+        // Ereignisfunktionen
+
+        events.push(function() {
+            var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var char = chars.charAt(Math.floor(Math.random() * chars.length));
+            var eventElement = document.createElement('div');
+            eventElement.className = 'event';
+            eventElement.textContent = char;
+            eventElement.style.fontSize = Math.floor(Math.random() * 40) + 'px';
+            eventElement.style.color = getRandomColor();
+            positionElement(eventElement);
+        });
+
+        events.push(function() {
+            var originalColor = '#343541';
+            var newColor = getRandomColor();
+            document.body.style.transition = 'background-color 1s';
+            document.body.style.backgroundColor = newColor;
+            setTimeout(function() {
+                document.body.style.backgroundColor = originalColor;
+            }, 3000);
+        });
+
+        events.push(function() {
+            var eventElement = document.createElement('div');
+            eventElement.className = 'event';
+            eventElement.textContent = '🚀';
+            eventElement.style.fontSize = '40px';
+            eventElement.style.left = '0px';
+            eventElement.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+            eventElement.style.position = 'absolute';
+            document.body.appendChild(eventElement);
+
+            var position = 0;
+            var interval = setInterval(function() {
+                position += 5;
+                eventElement.style.left = position + 'px';
+                if (position > window.innerWidth) {
+                    clearInterval(interval);
+                }
+            }, 20);
+
+            eventElements.push(eventElement);
+            if (eventElements.length > 100) {
+                var oldestElement = eventElements.shift();
+                oldestElement.remove();
+            }
+        });
+
+        events.push(function() {
+            var images = [
+                'https://via.placeholder.com/50',
+                'https://via.placeholder.com/60',
+                'https://via.placeholder.com/70'
+            ];
+            var img = document.createElement('img');
+            img.src = images[Math.floor(Math.random() * images.length)];
+            img.style.position = 'absolute';
+            positionElement(img);
+        });
+
+        events.push(function() {
+            var shapes = ['square', 'circle', 'triangle'];
+            var shape = shapes[Math.floor(Math.random() * shapes.length)];
+            var eventElement = document.createElement('div');
+            eventElement.className = 'event';
+            eventElement.style.width = '50px';
+            eventElement.style.height = '50px';
+            eventElement.style.backgroundColor = getRandomColor();
+
+            if (shape === 'circle') {
+                eventElement.style.borderRadius = '50%';
+            } else if (shape === 'triangle') {
+                eventElement.style.width = '0';
+                eventElement.style.height = '0';
+                eventElement.style.borderLeft = '25px solid transparent';
+                eventElement.style.borderRight = '25px solid transparent';
+                eventElement.style.borderBottom = '50px solid ' + getRandomColor();
+                eventElement.style.backgroundColor = 'transparent';
+            }
+
+            positionElement(eventElement);
+        });
+
+        events.push(function() {
+            var messages = ['Hallo!', 'Willkommen!', 'Viel Spaß!', 'Guten Tag!', 'Überraschung!'];
+            var message = messages[Math.floor(Math.random() * messages.length)];
+            var eventElement = document.createElement('div');
+            eventElement.className = 'event';
+            eventElement.textContent = message;
+            eventElement.style.fontSize = '30px';
+            eventElement.style.color = getRandomColor();
+            eventElement.style.left = '50%';
+            eventElement.style.top = '50%';
+            eventElement.style.transform = 'translate(-50%, -50%)';
+            eventElement.style.position = 'absolute';
+            document.body.appendChild(eventElement);
+
+            eventElements.push(eventElement);
+            if (eventElements.length > 100) {
+                var oldestElement = eventElements.shift();
+                oldestElement.remove();
+            }
+        });
+
+        events.push(function() {
+            for (var i = 0; i < 100; i++) {
+                var confetti = document.createElement('div');
+                confetti.className = 'event';
+                confetti.style.width = '5px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.position = 'absolute';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = '0px';
+                document.body.appendChild(confetti);
+
+                (function(confetti) {
+                    var position = 0;
+                    var interval = setInterval(function() {
+                        position += Math.random() * 5;
+                        confetti.style.top = position + 'px';
+                        if (position > window.innerHeight) {
+                            clearInterval(interval);
+                        }
+                    }, 20);
+                })(confetti);
+
+                eventElements.push(confetti);
+                if (eventElements.length > 1000) {
+                    var oldestElement = eventElements.shift();
+                    oldestElement.remove();
+                }
+            }
+        });
+
+        events.push(function() {
+            document.body.style.transition = 'transform 2s';
+            document.body.style.transform = 'rotate(360deg)';
+            setTimeout(function() {
+                document.body.style.transform = 'rotate(0deg)';
+            }, 2000);
+        });
+
+        events.push(function() {
+            var line = document.createElement('div');
+            line.className = 'event';
+            line.style.position = 'absolute';
+            line.style.width = Math.random() * 200 + 'px';
+            line.style.height = '2px';
+            line.style.backgroundColor = getRandomColor();
+            positionElement(line);
+        });
+
+        events.push(function() {
+            var originalBackground = document.body.style.backgroundImage;
+            document.body.style.backgroundImage = 'url(https://via.placeholder.com/800x600)';
+            setTimeout(function() {
+                document.body.style.backgroundImage = originalBackground;
+            }, 3000);
+        });
+
+        events.push(function() {
+            var ball = document.createElement('div');
+            ball.className = 'event';
+            ball.style.width = '30px';
+            ball.style.height = '30px';
+            ball.style.backgroundColor = getRandomColor();
+            ball.style.borderRadius = '50%';
+            ball.style.position = 'absolute';
+            var x = Math.random() * (window.innerWidth - 30);
+            var y = Math.random() * (window.innerHeight - 30);
+            var dx = 2 + Math.random() * 3;
+            var dy = 2 + Math.random() * 3;
+            ball.style.left = x + 'px';
+            ball.style.top = y + 'px';
+            document.body.appendChild(ball);
+
+            var interval = setInterval(function() {
+                x += dx;
+                y += dy;
+                if (x <= 0 || x >= window.innerWidth - 30) dx = -dx;
+                if (y <= 0 || y >= window.innerHeight - 30) dy = -dy;
+                ball.style.left = x + 'px';
+                ball.style.top = y + 'px';
+            }, 20);
+
+            eventElements.push(ball);
+            if (eventElements.length > 100) {
+                var oldestElement = eventElements.shift();
+                oldestElement.remove();
+            }
+        });
+
+        events.push(function() {
+            for (var i = 0; i < 200; i++) {
+                var drop = document.createElement('div');
+                drop.className = 'event';
+                drop.style.width = '2px';
+                drop.style.height = '10px';
+                drop.style.backgroundColor = '#00f';
+                drop.style.position = 'absolute';
+                drop.style.left = Math.random() * window.innerWidth + 'px';
+                drop.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(drop);
+
+                (function(drop) {
+                    var position = parseInt(drop.style.top);
+                    var interval = setInterval(function() {
+                        position += 5;
+                        drop.style.top = position + 'px';
+                        if (position > window.innerHeight) {
+                            clearInterval(interval);
+                        }
+                    }, 20);
+                })(drop);
+
+                eventElements.push(drop);
+                if (eventElements.length > 1000) {
+                    var oldestElement = eventElements.shift();
+                    oldestElement.remove();
+                }
+            }
+        });
+
+        var baseEventsLength = events.length;
+        for (var i = baseEventsLength; i < 100; i++) {
+            events.push(function() {
+                var eventElement = document.createElement('div');
+                eventElement.className = 'event';
+                eventElement.style.position = 'absolute';
+                eventElement.style.fontSize = Math.floor(Math.random() * 40) + 10 + 'px';
+                eventElement.style.color = getRandomColor();
+                var emojis = ['🌟','⚡','🔥','✨','🎉','🎈','💥','🌈','🌊','❄️','☀️','🌙','⭐','☁️','☂️'];
+                eventElement.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                positionElement(eventElement);
+            });
+        }
+
+        startCountdown();
+
+    </script>
+</body>
+</html>
+
